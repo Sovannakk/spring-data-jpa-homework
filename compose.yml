@@ -1,0 +1,36 @@
+services:
+  spring-data-jpa-homework-postgres:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_DB: expense_tracking_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - spring-data-jpa-homework-postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5434:5432"
+    networks:
+      - spring-data-jpa-homework-network
+
+  spring-data-jpa-homework-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "9090:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://spring-data-jpa-homework-postgres:5432/expense_tracking_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+    depends_on:
+      - spring-data-jpa-homework-postgres
+    networks:
+      - spring-data-jpa-homework-network
+
+volumes:
+  spring-data-jpa-homework-postgres-data:
+networks:
+  spring-data-jpa-homework-network:
+    driver: bridge
